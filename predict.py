@@ -5,6 +5,8 @@ import shutil
 import subprocess
 import time
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from env import FEATURE_EXTRACTOR, REFINER_MODEL_CACHE, REFINER_URL, SAFETY_CACHE, SAFETY_URL, SDXL_MODEL_CACHE, SDXL_URL
+from utils import download_weights
 from weights import WeightsDownloadCache
 
 import numpy as np
@@ -32,17 +34,6 @@ from transformers import CLIPImageProcessor
 
 from dataset_and_utils import TokenEmbeddingsHandler
 
-SDXL_MODEL_CACHE = "./sdxl-cache"
-REFINER_MODEL_CACHE = "./refiner-cache"
-SAFETY_CACHE = "./safety-cache"
-FEATURE_EXTRACTOR = "./feature-extractor"
-SDXL_URL = "https://weights.replicate.delivery/default/sdxl/sdxl-vae-upcast-fix.tar"
-REFINER_URL = (
-    "https://weights.replicate.delivery/default/sdxl/refiner-no-vae-no-encoder-1.0.tar"
-)
-SAFETY_URL = "https://weights.replicate.delivery/default/sdxl/safety-1.0.tar"
-
-
 class KarrasDPM:
     def from_config(config):
         return DPMSolverMultistepScheduler.from_config(config, use_karras_sigmas=True)
@@ -58,13 +49,6 @@ SCHEDULERS = {
     "PNDM": PNDMScheduler,
 }
 
-
-def download_weights(url, dest):
-    start = time.time()
-    print("downloading url: ", url)
-    print("downloading to: ", dest)
-    subprocess.check_call(["pget", "-x", url, dest], close_fds=False)
-    print("downloading took: ", time.time() - start)
 
 
 class Predictor(BasePredictor):
